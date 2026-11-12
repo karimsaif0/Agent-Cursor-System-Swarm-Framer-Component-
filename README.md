@@ -1,14 +1,13 @@
 # Agent Cursor System Swarm
 
 <p align="center">
-  <strong>A self-contained swarm of animated cursor agents for Framer.</strong><br />
-  An isolated interactive build-system visual, designed to live safely inside its own component frame.
+  <strong>A coordinated swarm of animated cursor agents, built as a self-contained Framer experience.</strong>
 </p>
 
 <p align="center">
   <a href="https://agentcursorsystemswarm.framer.website/">Live Preview</a>
   ·
-  <a href="https://github.com/karimsaif0/Agent-Cursor-System-Swarm-Framer-Component-/blob/main/SwarmBuild.tsx">Component Source</a>
+  <a href="./Agent_Cursor_System_Swarm.tsx">Framer Component Source</a>
   ·
   <a href="https://x.com/karimsaif0">Creator on X</a>
 </p>
@@ -17,63 +16,76 @@
 
 ## Overview
 
-**Agent Cursor System Swarm** brings a coordinated team of animated cursor agents into a self-contained Framer component. Agents move between visual build cards, trace progress, and create the atmosphere of a miniature interface-construction system.
+**Agent Cursor System Swarm** brings the visual language of a collaborative agent workflow into a Framer Code Component. Multiple animated cursor agents orbit a focused build area while a technical interface communicates progress, activity, and system status.
 
-The experience includes a compact HUD, agent activity panel, measurement ticks, orbit behavior, and a polished static fallback.
+The experience includes a futuristic HUD, measurement guides, an agent activity panel, a scanning line, progress feedback, and replay controls. All visual activity is contained within the component's own frame.
 
 **Created by Karim Saif.**
 
 ## Live Preview
 
-[Open the live preview](https://agentcursorsystemswarm.framer.website/)
+Explore the experience:
+
+**[agentcursorsystemswarm.framer.website](https://agentcursorsystemswarm.framer.website/)**
 
 ## Features
 
-- Animated multi-agent cursor swarm rendered on a local canvas.
-- Self-contained visual build cards and progressive scan effects.
-- Pointer-responsive agent orbit contained within the component.
-- Configurable agent count and animation speed.
-- Custom accent, background, and panel colors.
-- Optional activity log, HUD, and measurement rulers.
-- Responsive canvas sizing with a capped device pixel ratio.
-- Animation starts only while the component is visible.
-- Animation, observers, and local pointer listeners are cleaned up on unmount.
-- Framer static-renderer detection with a lightweight non-animated fallback.
-- No host-page scanning, global overlays, or mutation of unrelated page elements.
+- **Animated agent swarm** — configure up to 20 cursor agents with individual colors and labels.
+- **Self-contained build stage** — the visual build sequence runs inside the component's own rendered area.
+- **Technical measurement guides** — optional ruler marks and a configurable scan line.
+- **Agent activity panel** — show a compact log of build-stage activity.
+- **Progress HUD** — display progress, agent count, and build status.
+- **Replay and skip controls** — restart or complete the local animation sequence.
+- **Pause and resume** — control the animation from the component interface.
+- **Custom styling** — configure background, accent, chip color, agent count, speed, and orbit radius.
+- **Static-rendering fallback** — renders a designed static composition in Framer static contexts.
+- **Visibility-aware animation** — uses IntersectionObserver to pause animation while the component is offscreen.
+- **Reduced-motion support** — completes the visual sequence without continuous motion when reduced motion is requested.
+- **Responsive layout** — adapts the stage and controls to the available component size.
 
 ## Framer Controls
 
 | Control | Description |
 | --- | --- |
-| Agents | Number of animated agents inside the component. |
-| Speed | Progression speed of the local build sequence. |
-| Accent | Cursor, scan, and progress accent color. |
-| Background | Background color of the component stage. |
-| Panel | Color used by static preview cards. |
-| Agent Log | Shows or hides the local activity panel. |
-| HUD | Shows or hides the local progress display. |
-| Rulers | Shows or hides measurement ticks. |
-| Ring Radius | Sets the agents' orbit radius around the local pointer. |
-| Build Layers | Sets the number of visual build cards. |
+| Agents | Number of animated cursor agents. |
+| Speed | Animation speed: 1×, 2×, or 4×. |
+| Preloader | Shows the initialization screen inside the component. |
+| Preloader BG | Sets the stage and fallback background. |
+| Accent | Sets the main accent color. |
+| Size Chip | Sets secondary label and indicator color. |
+| Build Line | Sets the scan guide's vertical position. |
+| Rulers | Shows or hides technical measurement marks. |
+| HUD | Shows or hides the progress and action controls. |
+| Ring Radius | Sets the agents' orbit radius. |
+| Replay Label | Sets the accessible name for the rebuild action. |
+| Agent Log | Shows or hides the activity panel. |
+| Log Rows | Sets the maximum number of activity entries. |
 
-Every control includes a description in Framer's property panel.
+All listed properties are exposed through Framer's property controls.
 
 ## Installation
 
 1. Open your Framer project.
-2. Add a Code Component.
-3. Open [`SwarmBuild.tsx`](./SwarmBuild.tsx) in this repository.
-4. Copy the complete source into your Framer Code Component.
-5. Add the component to your page and resize its frame.
-6. Adjust the controls in the Framer property panel.
+2. Add a new Code Component.
+3. Open [`Agent_Cursor_System_Swarm.tsx`](./Agent_Cursor_System_Swarm.tsx).
+4. Copy the complete source into the Framer Code Editor.
+5. Add the component to your page and size its frame.
+6. Customize the properties in the right-hand panel.
+7. Preview the page and publish when ready.
 
-## Scope and Compatibility
+## Component Boundaries and Compatibility
 
-This version is intentionally self-contained. It animates only the canvas, cards, HUD, and pointer interaction rendered by its own component. It does **not** inspect, select, hide, restyle, or attach click handlers to arbitrary elements elsewhere on the host page.
+This component is intentionally self-contained:
 
-The animation uses `useIsStaticRenderer` to disable animated work in static rendering contexts. In interactive rendering, a local `IntersectionObserver` starts and pauses the animation according to the component's visibility. A local `ResizeObserver` handles frame-size changes.
+- It does not scan the host page or query unrelated page elements.
+- It does not change styles or attributes on elements outside its own rendered output.
+- It does not attach click handlers to unrelated page elements.
+- It does not create a full-window portal or overlay.
+- Its canvas, controls, HUD, and visual build stage are rendered within its own frame.
 
-The component is a visual swarm simulation. It does not operate real AI agents or rebuild the surrounding website's actual content.
+The component uses Framer's `useIsStaticRenderer` hook to provide a lightweight static fallback. Animation is gated by `IntersectionObserver` and pauses when the component is offscreen. A `ResizeObserver` keeps the canvas aligned with the component's own dimensions.
+
+The animated agents visually represent a build workflow inside the component. They do not operate on or rebuild arbitrary content elsewhere on the host page.
 
 ## Support
 
@@ -82,6 +94,8 @@ Created by **Karim Saif**.
 - **X:** [@karimsaif0](https://x.com/karimsaif0)
 - **Email:** [karimsaif010@gmail.com](mailto:karimsaif010@gmail.com)
 - **Live Preview:** [agentcursorsystemswarm.framer.website](https://agentcursorsystemswarm.framer.website/)
+
+For questions, feedback, or collaboration, reach out through X or email.
 
 ---
 
