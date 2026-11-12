@@ -95,6 +95,8 @@ export default function SwarmBuild(props: Props) {
     const pointerRef = useRef({ x: -1000, y: -1000, active: false })
     const startedAtRef = useRef(0)
     const progressRef = useRef(0)
+    const rawProgressRef = useRef(0)
+    const offscreenAtRef = useRef(0)
     const [visible, setVisible] = useState(false)
     const [progress, setProgress] = useState(0)
     const [runId, setRunId] = useState(0)
@@ -136,6 +138,11 @@ export default function SwarmBuild(props: Props) {
             observer = new IntersectionObserver((entries) => {
                 const entry = entries[0]
                 const next = !!entry?.isIntersecting && entry.intersectionRatio > 0
+                if (!next && visibleRef.current) offscreenAtRef.current = performance.now()
+                if (next && !visibleRef.current && offscreenAtRef.current) {
+                    startedAtRef.current += performance.now() - offscreenAtRef.current
+                    offscreenAtRef.current = 0
+                }
                 visibleRef.current = next
                 setVisible(next)
             }, { threshold: [0, 0.01] })
@@ -159,10 +166,17 @@ export default function SwarmBuild(props: Props) {
             rafRef.current = null
             return
         }
+        if (typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+            progressRef.current = 1
+            rawProgressRef.current = 1
+            setProgress(1)
+            setComplete(true)
+            return
+        }
         const canvas = canvasRef.current
         const ctx = canvas?.getContext("2d")
         if (!canvas || !ctx) return
-        if (!startedAtRef.current) startedAtRef.current = performance.now() - progressRef.current * duration
+        if (!startedAtRef.current) startedAtRef.current = performance.now() - rawProgressRef.current * duration
         let lastUiUpdate = 0
         const draw = (now: number) => {
             if (!visibleRef.current) {
@@ -178,6 +192,7 @@ export default function SwarmBuild(props: Props) {
             const raw = clamp(elapsed / duration, 0, 1)
             const eased = raw < 0.5 ? 4 * raw * raw * raw : 1 - Math.pow(-2 * raw + 2, 3) / 2
             progressRef.current = eased
+            rawProgressRef.current = raw
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
             ctx.clearRect(0, 0, width, height)
             const lineY = height * clamp(Number(p.buildLine) || DEFAULTS.buildLine, 0.4, 0.98)
@@ -277,6 +292,7 @@ export default function SwarmBuild(props: Props) {
         if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
         rafRef.current = null
         progressRef.current = 0
+        rawProgressRef.current = 0
         startedAtRef.current = performance.now()
         setProgress(0)
         setComplete(false)
@@ -288,6 +304,7 @@ export default function SwarmBuild(props: Props) {
         if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
         rafRef.current = null
         progressRef.current = 1
+        rawProgressRef.current = 1
         setProgress(1)
         setComplete(true)
         setPaused(false)
@@ -351,8 +368,8 @@ export default function SwarmBuild(props: Props) {
             {p.hud && <div style={{ position: "absolute", zIndex: 6, left: "50%", bottom: 14, transform: "translateX(-50%)", display: "flex", alignItems: "center", gap: 9, maxWidth: "calc(100% - 24px)", padding: "7px 8px 7px 11px", boxSizing: "border-box", border: "1px solid #303b4b", borderRadius: 10, background: "rgba(12,15,21,.94)", color: "#c4ccda", boxShadow: "0 8px 24px rgba(0,0,0,.28)" }}>
                 <span style={{ fontSize: 9, whiteSpace: "nowrap" }}>{complete ? "BUILD COMPLETE" : agentCount + " AGENTS"}</span>
                 <span style={{ width: 54, height: 3, flexShrink: 0, borderRadius: 4, background: "#303b4b", overflow: "hidden" }}><span style={{ display: "block", width: progress * 100 + "%", height: "100%", background: accent }} /></span>
-                <button type="button" aria-label={complete ? "Rebuild component stage" : "Skip build animation"} onClick={complete ? restart : skip} style={{ border: 0, borderRadius: 6, padding: "7px 10px", background: accent, color: "#fff", font: "700 9px " + MONO, cursor: "pointer" }}>{complete ? "REBUILD" : "SKIP"}</button>
-                <button type="button" aria-label={paused ? "Resume animation" : "Pause animation"} onClick={() => { if (paused) { startedAtRef.current = performance.now() - progressRef.current * duration; setPaused(false) } else { setPaused(true) } }} style={{ border: "1px solid #3b4658", borderRadius: 6, padding: "7px 9px", background: "transparent", color: "#c4ccda", font: "700 9px " + MONO, cursor: "pointer" }}>{paused ? "PLAY" : "PAUSE"}</button>
+                <button type="button" aria-label={complete ? (p.replayName || "Rebuild component stage") : "Skip build animation"} onClick={complete ? restart : skip} style={{ border: 0, borderRadius: 6, padding: "7px 10px", background: accent, color: "#fff", font: "700 9px " + MONO, cursor: "pointer" }}>{complete ? "REBUILD" : "SKIP"}</button>
+                <button type="button" aria-label={paused ? "Resume animation" : "Pause animation"} onClick={() => { if (paused) { startedAtRef.current = performance.now() - rawProgressRef.current * duration; setPaused(false) } else { setPaused(true) } }} style={{ border: "1px solid #3b4658", borderRadius: 6, padding: "7px 9px", background: "transparent", color: "#c4ccda", font: "700 9px " + MONO, cursor: "pointer" }}>{paused ? "PLAY" : "PAUSE"}</button>
             </div>}
             {showPreloader && <div aria-live="polite" style={{ position: "absolute", zIndex: 10, inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, background: "rgba(8,10,14,.93)", color: "#e8edf7", pointerEvents: "none" }}>
                 <div style={{ width: 42, height: 42, border: "1px solid #354155", borderRadius: 12, display: "grid", placeItems: "center", boxShadow: "0 0 28px rgba(59,130,246,.12)" }}><span style={{ width: 18, height: 18, border: "2px dashed " + accent, borderRadius: 5, transform: "rotate(25deg)" }} /></div>
